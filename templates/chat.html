@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Cost Analysis Assistant - Azure Usage Analysis</title>
+    <!-- Add Poppins Font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0078D4;
+            --secondary-color: #50e3c2;
+            --assistant-color: #7b5cff;
+            --assistant-light: #f5f0ff;
+            --user-color: #0078D4;
+            --user-light: #f0f8ff;
+            --bg-color: #f7f9fc;
+            --text-color: #333;
+            --card-bg: white;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --card-radius: 12px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), #005a9e);
+            color: white;
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-title {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .back-button {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+        
+        .back-button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .back-arrow {
+            margin-right: 6px;
+        }
+        
+        h1 {
+            font-weight: 600;
+            font-size: 1.8rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .subtitle {
+            font-weight: 300;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        
+        .chat-layout {
+            display: flex;
+            flex-grow: 1;
+            gap: 20px;
+        }
+        
+        .chat-container {
+            flex: 1;
+            background-color: var(--card-bg);
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            max-height: calc(100vh - 160px);
+        }
+        
+        .sidebar {
+            width: 280px;
+            background-color: var(--card-bg);
+            border-radius: var(--card-radius);
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+        }
+        
+        .data-summary {
+            margin-bottom: 2rem;
+        }
+        
+        .summary-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 0.75rem;
+        }
+        
+        .summary-item {
+            margin-bottom: 0.8rem;
+        }
+        
+        .summary-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.2rem;
+        }
+        
+        .summary-value {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        
+        .service-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .service-name {
+            font-weight: 500;
+        }
+        
+        .service-cost {
+            color: var(--primary-color);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        
+        .message {
+            margin-bottom: 1.5rem;
+            max-width: 85%;
+        }
+        
+        .message-user {
+            margin-left: auto;
+            background-color: var(--user-light);
+            border-radius: 18px 18px 0 18px;
+            padding: 1rem;
+            color: var(--text-color);
+        }
+        
+        .message-assistant {
+            margin-right: auto;
+            background-color: var(--assistant-light);
+            border-radius: 18px 18px 18px 0;
+            padding: 1rem;
+            color: var(--text-color);
+        }
+        
+        .message-content {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        
+        .message-content p {
+            margin-bottom: 0.8rem;
+        }
+        
+        .message-content p:last-child {
+            margin-bottom: 0;
+        }
+        
+        .message-content ul, .message-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .message-time {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 0.3rem;
+            text-align: right;
+        }
+        
+        .chat-input {
+            border-top: 1px solid #eee;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            background-color: white;
+        }
+        
+        .message-input {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 22px;
+            padding: 10px 20px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            resize: none;
+            min-height: 44px;
+            max-height: 120px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .message-input:focus {
+            border-color: var(--primary-color);
+        }
+        
+        .send-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 22px;
+            margin-left: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+        
+        .send-button:hover {
+            background-color: #0063B1;
+        }
+        
+        .send-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .send-icon {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+        
+        .loading-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        
+        .loading-dots {
+            display: flex;
+        }
+        
+        .loading-dot {
+            width: 10px;
+            height: 10px;
+            margin: 0 5px;
+            border-radius: 50%;
+            background-color: var(--assistant-color);
+            animation: dot-flashing 1s infinite alternate;
+        }
+        
+        .loading-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .loading-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes dot-flashing {
+            0% {
+                opacity: 0.2;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        
+        .error-message {
+            background-color: #ffeeee;
+            border-left: 4px solid #e74c3c;
+            color: #c0392b;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: var(--card-radius);
+            font-weight: 500;
+        }
+        
+        .no-data-message {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        
+        .no-data-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #999;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding: 0.75rem;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .tips {
+            margin-top: 1.5rem;
+        }
+        
+        .tips-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+        
+        .tips-list {
+            font-size: 0.85rem;
+            color: #666;
+            list-style-type: none;
+        }
+        
+        .tips-list li {
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .tips-list li::before {
+            content: "•";
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        
+        @media (max-width: 992px) {
+            .chat-layout {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="/" class="back-button"><span class="back-arrow">←</span> Back to Dashboard</a>
+            <div class="header-title">
+                <h1>AI Cost Analysis Assistant</h1>
+                <div class="subtitle">Powered by Claude AI</div>
+            </div>
+            <div style="width: 115px;"></div> <!-- Placeholder for balance -->
+        </header>
+        
+        {% if error %}
+        <div class="error-message">
+            <h3>Error</h3>
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+        
+        {% if has_data %}
+        <div class="chat-layout">
+            <div class="sidebar">
+                <div class="data-summary">
+                    <div class="summary-title">Data Summary</div>
+                    <div class="summary-item">
+                        <div class="summary-label">Date Range</div>
+                        <div class="summary-value">{{ start_date }} to {{ end_date }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Total Cost</div>
+                        <div class="summary-value">{{ total_cost }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Top Services</div>
+                        <div class="summary-value">
+                            {% for service in top_services %}
+                            <div class="service-item">
+                                <div class="service-name">{{ service.name }}</div>
+                                <div class="service-cost">{{ service.cost }}</div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tips">
+                    <div class="tips-title">Tips for Better Results:</div>
+                    <ul class="tips-list">
+                        <li>Ask about specific services to optimize</li>
+                        <li>Request cost-saving strategies</li>
+                        <li>Inquire about resource rightsizing</li>
+                        <li>Ask about Azure reservations</li>
+                        <li>Request best practices for your usage pattern</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="chat-container">
+                <div id="chat-messages" class="chat-messages">
+                    <!-- Messages will be added here by JavaScript -->
+                </div>
+                
+                <div id="loading" class="loading-indicator" style="display: none;">
+                    <div class="loading-dots">
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                        <div class="loading-dot"></div>
+                    </div>
+                </div>
+                
+                <div class="chat-input">
+                    <textarea id="message-input" class="message-input" placeholder="Ask about how to optimize your Azure costs..." rows="1"></textarea>
+                    <button id="send-button" class="send-button" disabled>
+                        <svg class="send-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="chat-container">
+            <div class="no-data-message">
+                <div class="no-data-icon">📊</div>
+                <h3>No Data Available</h3>
+                <p>Please upload your Azure usage data on the dashboard first.</p>
+                <p><a href="/" style="color: var(--primary-color);">Return to dashboard</a> to upload data.</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        <footer>
+            <p>Azure Usage Analysis Tool | AI Assistant powered by Claude</p>
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const messageInput = document.getElementById('message-input');
+            const sendButton = document.getElementById('send-button');
+            const chatMessages = document.getElementById('chat-messages');
+            const loading = document.getElementById('loading');
+            
+            let conversationId = null;
+            
+            // Auto-resize textarea
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+                
+                // Enable/disable send button based on input
+                sendButton.disabled = this.value.trim() === '';
+            });
+            
+            // Handle Enter key (but allow Shift+Enter for new lines)
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (!sendButton.disabled) {
+                        sendMessage();
+                    }
+                }
+            });
+            
+            // Handle send button click
+            sendButton.addEventListener('click', sendMessage);
+            
+            // Format message content with Markdown-like formatting
+            function formatMessageContent(content) {
+                // Convert markdown-style formatting to HTML
+                // Bold text
+                content = content.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                
+                // Italics
+                content = content.replace(/\*(.*?)\*/g, '<em>$1</em>');
+                
+                // Convert line breaks to paragraphs
+                const paragraphs = content.split('\n\n');
+                content = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+                
+                // Lists
+                content = content.replace(/<p>(\d+\.\s.*?)<\/p>/g, '<ol><li>$1</li></ol>');
+                content = content.replace(/<p>(\-\s.*?)<\/p>/g, '<ul><li>$1</li></ul>');
+                
+                return content;
+            }
+            
+            // Add a message to the chat
+            function addMessage(content, sender) {
+                const messageElement = document.createElement('div');
+                messageElement.className = `message message-${sender}`;
+                
+                const contentElement = document.createElement('div');
+                contentElement.className = 'message-content';
+                contentElement.innerHTML = formatMessageContent(content);
+                messageElement.appendChild(contentElement);
+                
+                const timeElement = document.createElement('div');
+                timeElement.className = 'message-time';
+                const now = new Date();
+                timeElement.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                messageElement.appendChild(timeElement);
+                
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Show/hide loading indicator
+            function setLoading(isLoading) {
+                loading.style.display = isLoading ? 'flex' : 'none';
+                sendButton.disabled = isLoading;
+                messageInput.disabled = isLoading;
+            }
+            
+            // Send a message to the server
+            function sendMessage() {
+                const message = messageInput.value.trim();
+                if (message === '') return;
+                
+                // Add user message to chat
+                addMessage(message, 'user');
+                
+                // Clear and reset input
+                messageInput.value = '';
+                messageInput.style.height = 'auto';
+                sendButton.disabled = true;
+                
+                setLoading(true);
+                
+                // If this is the first message, start a new chat
+                if (!conversationId) {
+                    fetch('/api/chat/start', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({})
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            addMessage(`Error: ${data.error}`, 'assistant');
+                        } else {
+                            conversationId = data.conversation_id;
+                            addMessage(data.response, 'assistant');
+                        }
+                        setLoading(false);
+                    })
+                    .catch(error => {
+                        console.error('Error starting chat:', error);
+                        addMessage('Sorry, there was an error connecting to the AI assistant. Please try again.', 'assistant');
+                        setLoading(false);
+                    });
+                } else {
+                    // Send message in existing conversation - no need to pass conversation_id anymore
+                    fetch('/api/chat/message', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: message
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.error) {
+                            addMessage(`Error: ${data.error}`, 'assistant');
+                        } else {
+                            addMessage(data.response, 'assistant');
+                        }
+                        setLoading(false);
+                    })
+                    .catch(error => {
+                        console.error('Error sending message:', error);
+                        addMessage('Sorry, there was an error connecting to the AI assistant. Please try again.', 'assistant');
+                        setLoading(false);
+                    });
+                }
+            }
+            
+            // Start a new chat automatically when the page loads
+            if ({% if has_data %}true{% else %}false{% endif %}) {
+                setLoading(true);
+                fetch('/api/chat/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        addMessage(`Error: ${data.error}`, 'assistant');
+                    } else {
+                        conversationId = data.conversation_id;
+                        addMessage(data.response, 'assistant');
+                    }
+                    setLoading(false);
+                })
+                .catch(error => {
+                    console.error('Error starting chat:', error);
+                    addMessage('Sorry, there was an error connecting to the AI assistant. Please try again.', 'assistant');
+                    setLoading(false);
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

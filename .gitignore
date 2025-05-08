@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+.venv/
+ENV/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Azure Functions artifacts
+bin/
+obj/
+appsettings.json
+local.settings.json
+
+# Test files
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Application specific
+uploads/*
+!uploads/.gitkeep
+*.log
+*.csv
+data/*.csv 
