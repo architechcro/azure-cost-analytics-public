@@ -61,17 +61,18 @@ azure-usage-analysis/
 
 Copy `.env.example` to `.env` and fill in your values. Never commit your real `.env` file or secrets to the repository.
 
-| Variable                        | Required | Description                                 | Example Value                |
-|----------------------------------|----------|---------------------------------------------|------------------------------|
-| PORT                             | No       | Port to run the app on                      | 9099                         |
-| FLASK_ENV                        | No       | Flask environment (development/production)   | development                  |
-| SECRET_KEY                       | Yes      | Flask secret key                            | changeme                     |
-| AZURE_STORAGE_CONNECTION_STRING  | No       | Azure Blob Storage connection string         | DefaultEndpointsProtocol=... |
-| AZURE_STORAGE_CONTAINER_NAME     | No       | Azure Blob Storage container name            | uploads                      |
-| APPINSIGHTS_INSTRUMENTATIONKEY   | No       | Azure Application Insights key               | 00000000-0000-0000-0000-...  |
-| CLAUDE_API_KEY                   | No       | Claude AI API key for insights               | sk-...                       |
-| UPLOAD_FOLDER                    | No       | Local upload directory                       | uploads                      |
-| DATA_FOLDER                      | No       | Local data directory                         | data                         |
+| Variable                        | Required | Description                                         | Example Value                      |
+|----------------------------------|----------|-----------------------------------------------------|------------------------------------|
+| SECRET_KEY                       | Yes      | Flask secret key (set for production)               | changeme                           |
+| UPLOAD_FOLDER                    | No       | Local upload directory                              | uploads                            |
+| APPINSIGHTS_INSTRUMENTATIONKEY   | No       | Azure Application Insights key                      | 00000000-0000-0000-0000-...        |
+| CLAUDE_API_KEY                   | No       | Claude AI API key for insights                      | sk-...                             |
+| CLAUDE_API_URL                   | No       | Claude AI API URL                                   | https://api.anthropic.com/v1/messages |
+| CLAUDE_MODEL                     | No       | Claude AI model name                                | claude-3-sonnet-20240229           |
+| AZURE_STORAGE_CONNECTION_STRING  | No       | Azure Blob Storage connection string                | DefaultEndpointsProtocol=...        |
+| AZURE_STORAGE_CONTAINER_NAME     | No       | Azure Blob Storage container name                   | uploads                            |
+| PORT                             | No       | Port to run the app on                              | 9099                               |
+| DEBUG                            | No       | Enable debug mode (True/False)                      | False                              |
 
 ---
 
