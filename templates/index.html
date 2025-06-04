@@ -447,7 +447,7 @@
     <div class="container">
         <header>
             <h1>Azure Usage Analysis Dashboard</h1>
-            <div class="subtitle">Visualizing your cloud spending patterns</div>
+            <div class="subtitle">Visualizing your cloud spending patterns by <a href="https://architech.today" target="_blank">Architech</a></div>
             <div class="subtitle">Microsoft for Startups Founders Hub Edition</div>
         </header>
         
@@ -775,11 +775,13 @@
         // Load charts when the page is ready
         document.addEventListener('DOMContentLoaded', function() {
             // Get chart data from the server - data is already JSON stringified
+            /* eslint-disable */
             const weeklyTrendData = {{weekly_trend_json|safe}};
             const servicePieData = {{service_pie_json|safe}};
             const serviceComparisonData = {{service_comparison_json|safe}};
             const serviceMultilineData = {{service_multiline_json|safe}};
             const weeklyBreakdownData = {{weekly_breakdown_json|safe}};
+            /* eslint-enable */
                     
             // Render the charts
             setTimeout(() => {
